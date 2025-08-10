@@ -27,11 +27,11 @@ export default function SectorChart({ analysis }: SectorChartProps) {
   }
 
   const colors = [
-    'hsl(203.8863, 88.2845%, 53.1373%)', // Primary blue
-    'hsl(159.7826, 100%, 36.0784%)',     // Green
-    'hsl(42.0290, 92.8251%, 56.2745%)',  // Yellow
-    'hsl(147.1429, 78.5047%, 41.9608%)', // Dark green
-    'hsl(341.4894, 75.2000%, 50.9804%)', // Pink
+    'hsl(var(--chart-1))', // Primary blue
+    'hsl(var(--chart-2))', // Green
+    'hsl(var(--chart-3))', // Yellow
+    'hsl(var(--chart-4))', // Dark green
+    'hsl(var(--chart-5))', // Pink
   ];
 
   const data = {

@@ -204,7 +204,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get default portfolio (first portfolio for demo user)
   app.get("/api/portfolio", async (req, res) => {
     try {
-      const portfolios = await storage.getPortfoliosByUserId("demo");
+      // Find demo user first
+      const demoUser = await storage.getUserByUsername("demo");
+      if (!demoUser) {
+        return res.status(404).json({ message: "Demo user not found" });
+      }
+
+      const portfolios = await storage.getPortfoliosByUserId(demoUser.id);
       if (portfolios.length === 0) {
         return res.status(404).json({ message: "No portfolio found" });
       }
@@ -219,7 +225,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get portfolio analysis
   app.get("/api/portfolio/analysis", async (req, res) => {
     try {
-      const portfolios = await storage.getPortfoliosByUserId("demo");
+      // Find demo user first
+      const demoUser = await storage.getUserByUsername("demo");
+      if (!demoUser) {
+        return res.status(404).json({ message: "Demo user not found" });
+      }
+
+      const portfolios = await storage.getPortfoliosByUserId(demoUser.id);
       if (portfolios.length === 0) {
         return res.status(404).json({ message: "No portfolio found" });
       }
@@ -259,11 +271,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createOrUpdateStockData({
           symbol: stockQuote.symbol,
           companyName: companyInfo.companyName,
-          currentPrice: stockQuote.currentPrice,
-          changePercent: stockQuote.changePercent,
+          currentPrice: stockQuote.currentPrice.toString(),
+          changePercent: stockQuote.changePercent.toString(),
           sector: companyInfo.sector,
-          marketCap: companyInfo.marketCap,
-          peRatio: companyInfo.peRatio,
+          marketCap: companyInfo.marketCap?.toString(),
+          peRatio: companyInfo.peRatio?.toString(),
         });
       } catch (error) {
         console.warn("Failed to fetch stock data:", error);
@@ -334,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const holdings = await storage.getHoldingsByPortfolioId(portfolios[0].id);
-      const symbols = [...new Set(holdings.map(h => h.symbol))];
+      const symbols = Array.from(new Set(holdings.map(h => h.symbol)));
       
       const updates = await Promise.all(
         symbols.map(async (symbol) => {
@@ -343,8 +355,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return storage.createOrUpdateStockData({
               symbol: stockQuote.symbol,
               companyName: "", // Will be filled from existing data
-              currentPrice: stockQuote.currentPrice,
-              changePercent: stockQuote.changePercent,
+              currentPrice: stockQuote.currentPrice.toString(),
+              changePercent: stockQuote.changePercent.toString(),
               sector: "Technology", // Default
             });
           } catch (error) {

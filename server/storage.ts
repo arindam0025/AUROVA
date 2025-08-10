@@ -48,6 +48,37 @@ export class MemStorage implements IStorage {
       userId: defaultUser.id,
       name: "My Portfolio"
     });
+
+    // Add sample holdings with mock stock data
+    const sampleStocks = [
+      { symbol: "AAPL", companyName: "Apple Inc.", shares: "10", purchasePrice: "150.00", sector: "Technology", currentPrice: "175.43" },
+      { symbol: "MSFT", companyName: "Microsoft Corporation", shares: "5", purchasePrice: "300.00", sector: "Technology", currentPrice: "385.20" },
+      { symbol: "GOOGL", companyName: "Alphabet Inc.", shares: "2", purchasePrice: "2500.00", sector: "Technology", currentPrice: "2680.30" },
+      { symbol: "JPM", companyName: "JPMorgan Chase & Co.", shares: "8", purchasePrice: "140.00", sector: "Finance", currentPrice: "155.75" },
+      { symbol: "JNJ", companyName: "Johnson & Johnson", shares: "12", purchasePrice: "160.00", sector: "Healthcare", currentPrice: "172.50" }
+    ];
+
+    for (const stock of sampleStocks) {
+      // Create stock data
+      await this.createOrUpdateStockData({
+        symbol: stock.symbol,
+        companyName: stock.companyName,
+        currentPrice: stock.currentPrice,
+        changePercent: ((Math.random() - 0.5) * 10).toString(), // Random change -5% to +5%
+        sector: stock.sector,
+        marketCap: null,
+        peRatio: null,
+      });
+
+      // Create holding
+      await this.createHolding({
+        portfolioId: defaultPortfolio.id,
+        symbol: stock.symbol,
+        shares: stock.shares,
+        purchasePrice: stock.purchasePrice,
+        purchaseDate: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000), // Random date within last 90 days
+      });
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -140,6 +171,7 @@ export class MemStorage implements IStorage {
       changePercent: insertStockData.changePercent?.toString() || null,
       marketCap: insertStockData.marketCap?.toString() || null,
       peRatio: insertStockData.peRatio?.toString() || null,
+      sector: insertStockData.sector || null,
       lastUpdated: new Date(),
     };
     this.stockData.set(symbol, stockData);

@@ -56,12 +56,12 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
       {
         label: 'Portfolio Value',
         data: values,
-        borderColor: 'hsl(203.8863, 88.2845%, 53.1373%)',
-        backgroundColor: 'hsla(203.8863, 88.2845%, 53.1373%, 0.1)',
+        borderColor: 'hsl(var(--chart-1))',
+        backgroundColor: 'hsla(var(--chart-1), 0.1)',
         tension: 0.4,
         fill: true,
-        pointBackgroundColor: 'hsl(203.8863, 88.2845%, 53.1373%)',
-        pointBorderColor: '#fff',
+        pointBackgroundColor: 'hsl(var(--chart-1))',
+        pointBorderColor: 'hsl(var(--card))',
         pointBorderWidth: 2,
         pointRadius: 4,
       },
@@ -99,7 +99,7 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
           },
         },
         grid: {
-          color: 'hsl(205.0000, 25.0000%, 90.5882%)',
+          color: 'hsl(var(--border))',
         },
       },
       x: {

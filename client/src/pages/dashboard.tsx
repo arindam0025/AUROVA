@@ -6,21 +6,23 @@ import AddHoldingForm from "@/components/add-holding-form";
 import PerformanceChart from "@/components/performance-chart";
 import SectorChart from "@/components/sector-chart";
 import Recommendations from "@/components/recommendations";
+import ThemeToggle from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Plus } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import type { PortfolioWithHoldings, PortfolioAnalysis } from "@shared/schema";
 
 export default function Dashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
   const { toast } = useToast();
 
-  const { data: portfolio, isLoading: portfolioLoading, refetch: refetchPortfolio } = useQuery({
+  const { data: portfolio, isLoading: portfolioLoading, refetch: refetchPortfolio } = useQuery<PortfolioWithHoldings>({
     queryKey: ["/api/portfolio"],
   });
 
-  const { data: analysis, isLoading: analysisLoading, refetch: refetchAnalysis } = useQuery({
+  const { data: analysis, isLoading: analysisLoading, refetch: refetchAnalysis } = useQuery<PortfolioAnalysis>({
     queryKey: ["/api/portfolio/analysis"],
   });
 
@@ -53,18 +55,19 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-background">
       <Sidebar />
       
       <main className="flex-1 overflow-auto">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <header className="bg-card border-b border-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Portfolio Dashboard</h2>
-              <p className="text-sm text-gray-500">Monitor and analyze your investment performance</p>
+              <h2 className="text-2xl font-bold text-foreground">Portfolio Dashboard</h2>
+              <p className="text-sm text-muted-foreground">Monitor and analyze your investment performance</p>
             </div>
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Button 
                 onClick={() => setShowAddForm(true)} 
                 className="bg-primary hover:bg-primary/90"
