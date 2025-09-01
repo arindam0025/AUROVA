@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { supabaseStorage } from "./supabase-storage";
 import { insertHoldingSchema, insertPortfolioSchema, type PortfolioAnalysis } from "@shared/schema";
-import { z } from "z";
+import { z } from "zod";
 
 // Alpha Vantage API integration for AUROVA portfolio analysis
 const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY || process.env.VITE_ALPHA_VANTAGE_API_KEY || "demo";
