@@ -56,14 +56,18 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
       {
         label: 'Portfolio Value',
         data: values,
-        borderColor: 'hsl(var(--chart-1))',
-        backgroundColor: 'hsla(var(--chart-1), 0.1)',
-        tension: 0.4,
+        borderColor: 'rgba(30,41,59,1)', // slate-800
+        backgroundColor: 'rgba(30,41,59,0.15)',
+        tension: 0.5,
         fill: true,
-        pointBackgroundColor: 'hsl(var(--chart-1))',
-        pointBorderColor: 'hsl(var(--card))',
-        pointBorderWidth: 2,
-        pointRadius: 4,
+        pointBackgroundColor: 'rgba(30,41,59,1)',
+        pointBorderColor: 'rgba(255,255,255,0.85)',
+        pointBorderWidth: 3,
+        pointRadius: 6,
+        shadowOffsetX: 2,
+        shadowOffsetY: 2,
+        shadowBlur: 8,
+        shadowColor: 'rgba(30,41,59,0.3)',
       },
     ],
   };
@@ -76,6 +80,11 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
         display: false,
       },
       tooltip: {
+        backgroundColor: 'rgba(30,41,59,0.95)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: '#475569',
+        borderWidth: 2,
         callbacks: {
           label: function(context: any) {
             return `Portfolio Value: ${new Intl.NumberFormat('en-US', {
@@ -90,6 +99,8 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
       y: {
         beginAtZero: false,
         ticks: {
+          color: '#475569',
+          font: { weight: 'bold' },
           callback: function(value: any) {
             return new Intl.NumberFormat('en-US', {
               style: 'currency',
@@ -99,10 +110,14 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
           },
         },
         grid: {
-          color: 'hsl(var(--border))',
+          color: 'rgba(30,41,59,0.1)',
         },
       },
       x: {
+        ticks: {
+          color: '#475569',
+          font: { weight: 'bold' },
+        },
         grid: {
           display: false,
         },
@@ -118,12 +133,12 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
   ];
 
   return (
-    <Card>
+    <Card className="bg-white/90 dark:bg-slate-900/90 backdrop-blur rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Portfolio Performance</CardTitle>
-            <p className="text-sm text-gray-500">Historical value over time</p>
+            <CardTitle className="text-slate-900 dark:text-slate-300">Portfolio Performance</CardTitle>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Historical value over time</p>
           </div>
           <div className="flex space-x-2">
             {timeframes.map((timeframe) => (
@@ -131,7 +146,7 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
                 key={timeframe.label}
                 variant={timeframe.active ? "default" : "outline"}
                 size="sm"
-                className={timeframe.active ? "bg-primary text-white" : ""}
+                className={timeframe.active ? "bg-slate-800 text-white" : ""}
                 data-testid={`button-timeframe-${timeframe.label}`}
               >
                 {timeframe.label}
@@ -141,7 +156,7 @@ export default function PerformanceChart({ analysis }: PerformanceChartProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-64" data-testid="chart-performance">
+        <div className="h-64 rounded-xl bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-slate-900 dark:via-slate-800 dark:to-slate-700 p-4 shadow-lg border border-slate-200 dark:border-slate-700" data-testid="chart-performance">
           <Line data={data} options={options} />
         </div>
       </CardContent>

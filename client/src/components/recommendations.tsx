@@ -12,11 +12,11 @@ export default function Recommendations({ analysis }: RecommendationsProps) {
       <Card>
         <CardHeader>
           <CardTitle>AI Recommendations</CardTitle>
-          <p className="text-sm text-gray-500">Personalized insights</p>
+          <p className="text-sm text-slate-500">Personalized insights</p>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-gray-500">No recommendations available</p>
+            <p className="text-slate-500">No recommendations available</p>
           </div>
         </CardContent>
       </Card>
@@ -40,10 +40,10 @@ export default function Recommendations({ analysis }: RecommendationsProps) {
     switch (type) {
       case 'warning':
         return {
-          container: 'bg-yellow-50 border-yellow-200',
-          icon: 'text-yellow-600',
-          title: 'text-yellow-800',
-          message: 'text-yellow-700',
+          container: 'bg-amber-50 border-amber-200',
+          icon: 'text-amber-600',
+          title: 'text-amber-800',
+          message: 'text-amber-700',
         };
       case 'success':
         return {
@@ -54,28 +54,31 @@ export default function Recommendations({ analysis }: RecommendationsProps) {
         };
       case 'info':
         return {
-          container: 'bg-blue-50 border-blue-200',
-          icon: 'text-blue-600',
-          title: 'text-blue-800',
-          message: 'text-blue-700',
+          container: 'bg-slate-50 border-slate-200',
+          icon: 'text-slate-600',
+          title: 'text-slate-800',
+          message: 'text-slate-700',
         };
       default:
         return {
-          container: 'bg-gray-50 border-gray-200',
-          icon: 'text-gray-600',
-          title: 'text-gray-800',
-          message: 'text-gray-700',
+          container: 'bg-slate-50 border-slate-200',
+          icon: 'text-slate-600',
+          title: 'text-slate-800',
+          message: 'text-slate-700',
         };
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>AI Recommendations</CardTitle>
-        <p className="text-sm text-gray-500">Personalized insights</p>
+    <Card className="group relative overflow-hidden bg-white/95 backdrop-blur-xl border border-slate-200/50 shadow-xl hover:shadow-2xl transition-all duration-500">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50/30 to-blue-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <CardHeader className="relative z-10 bg-gradient-to-r from-slate-50 to-blue-50/30 border-b border-slate-200/50">
+        <CardTitle className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+          AI Recommendations
+        </CardTitle>
+        <p className="text-sm text-slate-600">Personalized insights</p>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="relative z-10 space-y-4">
         {analysis.recommendations.map((recommendation, index) => {
           const styles = getStyles(recommendation.type);
           const Icon = () => getIcon(recommendation.type);
@@ -83,18 +86,18 @@ export default function Recommendations({ analysis }: RecommendationsProps) {
           return (
             <div
               key={index}
-              className={`border rounded-lg p-4 ${styles.container}`}
+              className={`group/item border rounded-xl p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${styles.container}`}
               data-testid={`recommendation-${recommendation.type}-${index}`}
             >
               <div className="flex items-start">
-                <div className={`mt-1 mr-3 ${styles.icon}`}>
+                <div className={`mt-1 mr-3 transition-all duration-300 transform group-hover/item:scale-110 group-hover/item:rotate-3 ${styles.icon}`}>
                   <Icon />
                 </div>
                 <div>
-                  <h4 className={`text-sm font-medium ${styles.title}`}>
+                  <h4 className={`text-sm font-semibold transition-colors duration-300 ${styles.title}`}>
                     {recommendation.title}
                   </h4>
-                  <p className={`text-sm mt-1 ${styles.message}`}>
+                  <p className={`text-sm mt-1 transition-colors duration-300 ${styles.message}`}>
                     {recommendation.message}
                   </p>
                 </div>

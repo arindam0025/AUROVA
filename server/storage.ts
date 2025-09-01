@@ -46,7 +46,7 @@ export class MemStorage implements IStorage {
     
     const defaultPortfolio = await this.createPortfolio({
       userId: defaultUser.id,
-      name: "My Portfolio"
+      name: "AUROVA Portfolio"
     });
 
     // Add sample holdings with mock stock data
@@ -55,7 +55,22 @@ export class MemStorage implements IStorage {
       { symbol: "MSFT", companyName: "Microsoft Corporation", shares: "5", purchasePrice: "300.00", sector: "Technology", currentPrice: "385.20" },
       { symbol: "GOOGL", companyName: "Alphabet Inc.", shares: "2", purchasePrice: "2500.00", sector: "Technology", currentPrice: "2680.30" },
       { symbol: "JPM", companyName: "JPMorgan Chase & Co.", shares: "8", purchasePrice: "140.00", sector: "Finance", currentPrice: "155.75" },
-      { symbol: "JNJ", companyName: "Johnson & Johnson", shares: "12", purchasePrice: "160.00", sector: "Healthcare", currentPrice: "172.50" }
+      { symbol: "JNJ", companyName: "Johnson & Johnson", shares: "12", purchasePrice: "160.00", sector: "Healthcare", currentPrice: "172.50" },
+      { symbol: "XOM", companyName: "Exxon Mobil Corporation", shares: "15", purchasePrice: "90.00", sector: "Energy", currentPrice: "105.30" },
+      { symbol: "PG", companyName: "Procter & Gamble Co.", shares: "10", purchasePrice: "140.00", sector: "Consumer Staples", currentPrice: "155.10" },
+      { symbol: "HD", companyName: "Home Depot Inc.", shares: "6", purchasePrice: "320.00", sector: "Consumer Discretionary", currentPrice: "345.60" },
+      { symbol: "UNH", companyName: "UnitedHealth Group Inc.", shares: "7", purchasePrice: "400.00", sector: "Healthcare", currentPrice: "445.80" },
+      { symbol: "VZ", companyName: "Verizon Communications Inc.", shares: "20", purchasePrice: "35.00", sector: "Communication Services", currentPrice: "38.50" },
+      { symbol: "BA", companyName: "Boeing Co.", shares: "4", purchasePrice: "210.00", sector: "Industrials", currentPrice: "225.70" },
+      { symbol: "DUK", companyName: "Duke Energy Corp.", shares: "10", purchasePrice: "95.00", sector: "Utilities", currentPrice: "102.40" },
+      { symbol: "PLD", companyName: "Prologis Inc.", shares: "5", purchasePrice: "120.00", sector: "Real Estate", currentPrice: "130.20" },
+      { symbol: "LIN", companyName: "Linde plc", shares: "3", purchasePrice: "350.00", sector: "Materials", currentPrice: "370.10" },
+      { symbol: "NVDA", companyName: "NVIDIA Corporation", shares: "2", purchasePrice: "700.00", sector: "Technology", currentPrice: "820.50" },
+      { symbol: "KO", companyName: "Coca-Cola Co.", shares: "18", purchasePrice: "60.00", sector: "Consumer Staples", currentPrice: "65.30" },
+      { symbol: "DIS", companyName: "Walt Disney Co.", shares: "7", purchasePrice: "100.00", sector: "Communication Services", currentPrice: "110.40" },
+      { symbol: "CAT", companyName: "Caterpillar Inc.", shares: "5", purchasePrice: "220.00", sector: "Industrials", currentPrice: "235.90" },
+      { symbol: "SO", companyName: "Southern Co.", shares: "12", purchasePrice: "70.00", sector: "Utilities", currentPrice: "75.80" },
+      { symbol: "SPG", companyName: "Simon Property Group Inc.", shares: "6", purchasePrice: "110.00", sector: "Real Estate", currentPrice: "120.60" }
     ];
 
     for (const stock of sampleStocks) {

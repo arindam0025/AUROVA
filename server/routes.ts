@@ -1,10 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { supabaseStorage } from "./supabase-storage";
 import { insertHoldingSchema, insertPortfolioSchema, type PortfolioAnalysis } from "@shared/schema";
-import { z } from "zod";
+import { z } from "z";
 
-// Alpha Vantage API integration
+// Alpha Vantage API integration for AUROVA portfolio analysis
 const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY || process.env.VITE_ALPHA_VANTAGE_API_KEY || "demo";
 
 async function fetchStockData(symbol: string) {
@@ -201,23 +201,27 @@ function calculatePortfolioAnalysis(portfolio: any): PortfolioAnalysis {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize demo data on startup
+  await supabaseStorage.initializeDemoData();
+
   // Get default portfolio (first portfolio for demo user)
   app.get("/api/portfolio", async (req, res) => {
     try {
       // Find demo user first
-      const demoUser = await storage.getUserByUsername("demo");
+      const demoUser = await supabaseStorage.getUserByUsername("demo");
       if (!demoUser) {
         return res.status(404).json({ message: "Demo user not found" });
       }
 
-      const portfolios = await storage.getPortfoliosByUserId(demoUser.id);
+      const portfolios = await supabaseStorage.getPortfoliosByUserId(demoUser.id);
       if (portfolios.length === 0) {
         return res.status(404).json({ message: "No portfolio found" });
       }
       
-      const portfolio = await storage.getPortfolioWithHoldings(portfolios[0].id);
+      const portfolio = await supabaseStorage.getPortfolioWithHoldings(portfolios[0].id);
       res.json(portfolio);
     } catch (error) {
+      console.error("Error fetching portfolio:", error);
       res.status(500).json({ message: "Failed to fetch portfolio" });
     }
   });
@@ -226,17 +230,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/portfolio/analysis", async (req, res) => {
     try {
       // Find demo user first
-      const demoUser = await storage.getUserByUsername("demo");
+      const demoUser = await supabaseStorage.getUserByUsername("demo");
       if (!demoUser) {
         return res.status(404).json({ message: "Demo user not found" });
       }
 
-      const portfolios = await storage.getPortfoliosByUserId(demoUser.id);
+      const portfolios = await supabaseStorage.getPortfoliosByUserId(demoUser.id);
       if (portfolios.length === 0) {
         return res.status(404).json({ message: "No portfolio found" });
       }
       
-      const portfolio = await storage.getPortfolioWithHoldings(portfolios[0].id);
+      const portfolio = await supabaseStorage.getPortfolioWithHoldings(portfolios[0].id);
       if (!portfolio) {
         return res.status(404).json({ message: "Portfolio not found" });
       }
@@ -244,6 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const analysis = calculatePortfolioAnalysis(portfolio);
       res.json(analysis);
     } catch (error) {
+      console.error("Error analyzing portfolio:", error);
       res.status(500).json({ message: "Failed to analyze portfolio" });
     }
   });
@@ -251,7 +256,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add new holding
   app.post("/api/holdings", async (req, res) => {
     try {
-      const portfolios = await storage.getPortfoliosByUserId("demo");
+      const demoUser = await supabaseStorage.getUserByUsername("demo");
+      if (!demoUser) {
+        return res.status(404).json({ message: "Demo user not found" });
+      }
+
+      const portfolios = await supabaseStorage.getPortfoliosByUserId(demoUser.id);
       if (portfolios.length === 0) {
         return res.status(404).json({ message: "No portfolio found" });
       }
@@ -268,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fetchCompanyInfo(data.symbol)
         ]);
 
-        await storage.createOrUpdateStockData({
+        await supabaseStorage.createOrUpdateStockData({
           symbol: stockQuote.symbol,
           companyName: companyInfo.companyName,
           currentPrice: stockQuote.currentPrice.toString(),
@@ -281,19 +291,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.warn("Failed to fetch stock data:", error);
       }
 
-      const holding = await storage.createHolding(data);
+      const holding = await supabaseStorage.createHolding(data);
       
       // Update holding with stock data
-      const stockData = await storage.getStockData(data.symbol);
+      const stockData = await supabaseStorage.getStockData(data.symbol);
       if (stockData) {
-        await storage.updateHolding(holding.id, {
+        await supabaseStorage.updateHolding(holding.id, {
           currentPrice: stockData.currentPrice,
           companyName: stockData.companyName,
           sector: stockData.sector,
         });
       }
 
-      const updatedHolding = await storage.getHolding(holding.id);
+      const updatedHolding = await supabaseStorage.getHolding(holding.id);
       res.json(updatedHolding);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -310,13 +320,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const updates = req.body;
       
-      const holding = await storage.updateHolding(id, updates);
+      const holding = await supabaseStorage.updateHolding(id, updates);
       if (!holding) {
         return res.status(404).json({ message: "Holding not found" });
       }
       
       res.json(holding);
     } catch (error) {
+      console.error("Failed to update holding:", error);
       res.status(500).json({ message: "Failed to update holding" });
     }
   });
@@ -325,7 +336,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/holdings/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const deleted = await storage.deleteHolding(id);
+      const deleted = await supabaseStorage.deleteHolding(id);
       
       if (!deleted) {
         return res.status(404).json({ message: "Holding not found" });
@@ -333,6 +344,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ message: "Holding deleted successfully" });
     } catch (error) {
+      console.error("Failed to delete holding:", error);
       res.status(500).json({ message: "Failed to delete holding" });
     }
   });
@@ -340,19 +352,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Refresh stock prices
   app.post("/api/refresh-prices", async (req, res) => {
     try {
-      const portfolios = await storage.getPortfoliosByUserId("demo");
+      const demoUser = await supabaseStorage.getUserByUsername("demo");
+      if (!demoUser) {
+        return res.status(404).json({ message: "Demo user not found" });
+      }
+
+      const portfolios = await supabaseStorage.getPortfoliosByUserId(demoUser.id);
       if (portfolios.length === 0) {
         return res.status(404).json({ message: "No portfolio found" });
       }
 
-      const holdings = await storage.getHoldingsByPortfolioId(portfolios[0].id);
+      const holdings = await supabaseStorage.getHoldingsByPortfolioId(portfolios[0].id);
       const symbols = Array.from(new Set(holdings.map(h => h.symbol)));
       
       const updates = await Promise.all(
         symbols.map(async (symbol) => {
           try {
             const stockQuote = await fetchStockData(symbol);
-            return storage.createOrUpdateStockData({
+            return supabaseStorage.createOrUpdateStockData({
               symbol: stockQuote.symbol,
               companyName: "", // Will be filled from existing data
               currentPrice: stockQuote.currentPrice.toString(),
@@ -369,9 +386,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update holdings with new prices
       await Promise.all(
         holdings.map(async (holding) => {
-          const stockData = await storage.getStockData(holding.symbol);
+          const stockData = await supabaseStorage.getStockData(holding.symbol);
           if (stockData) {
-            await storage.updateHolding(holding.id, {
+            await supabaseStorage.updateHolding(holding.id, {
               currentPrice: stockData.currentPrice,
             });
           }
@@ -380,6 +397,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ message: "Prices updated successfully", updated: updates.filter(Boolean).length });
     } catch (error) {
+      console.error("Failed to refresh prices:", error);
       res.status(500).json({ message: "Failed to refresh prices" });
     }
   });

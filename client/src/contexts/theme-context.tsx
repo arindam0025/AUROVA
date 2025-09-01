@@ -34,6 +34,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // Add current theme class
     root.classList.add(theme);
     
+    // Also apply to body for better compatibility
+    document.body.classList.remove('light', 'dark');
+    document.body.classList.add(theme);
+    
     // Store in localStorage
     localStorage.setItem('theme', theme);
     
