@@ -4,3 +4,22 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+# Environment variables
+.env
+.env.*
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# OS files
+Thumbs.db
+# IDE files
+.idea/
+.vscode/
+# Misc
+*.local
+*.log
+# Ignore local state
+.local/
+# Ignore sensitive config
+config/*.env
