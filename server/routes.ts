@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { supabaseStorage } from "./supabase-storage";
 import { insertHoldingSchema, insertPortfolioSchema, type PortfolioAnalysis } from "@shared/schema";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 // Alpha Vantage API integration for AUROVA portfolio analysis
 const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY || process.env.VITE_ALPHA_VANTAGE_API_KEY || "demo";
@@ -306,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedHolding = await supabaseStorage.getHolding(holding.id);
       res.json(updatedHolding);
     } catch (error) {
-      if (error instanceof z.ZodError) {
+      if (error instanceof Error && 'errors' in error) {
         return res.status(400).json({ message: "Invalid input", errors: error.errors });
       }
       console.error("Failed to create holding:", error);
